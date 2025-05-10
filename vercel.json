@@ -5,34 +5,27 @@
       "src": "frontend/package.json",
       "use": "@vercel/static-build",
       "config": {
-        "distDir": "dist" 
+        "distDir": "dist"
       }
     },
     {
       "src": "api/index.py",
-      "use": "@vercel/python"
+      "use": "@vercel/python",
+      "config": { 
+        "maxDuration": 45,
+        "memory": 1024
+      }
     }
   ],
   "routes": [
     { "src": "/api/(.*)", "dest": "api/index.py" },
-
-   
-    { "src": "/assets/(.*)", "dest": "/frontend/dist/assets/$1" }, 
-
-    
-    { "src": "/favicon.ico", "dest": "/frontend/dist/favicon.ico" }, 
-    { "src": "/manifest.json", "dest": "/frontend/dist/manifest.json" }, 
+    { "src": "/assets/(.*)", "dest": "/frontend/dist/assets/$1" },
+    { "src": "/favicon.ico", "dest": "/frontend/dist/favicon.ico" },
+    { "src": "/manifest.json", "dest": "/frontend/dist/manifest.json" },
     { "handle": "filesystem" },
-
-   
-    { "src": "/(.*)", "dest": "/frontend/dist/index.html" } 
+    { "src": "/(.*)", "dest": "/frontend/dist/index.html" }
   ],
-  "functions": {
-    "api/index.py": {
-      "maxDuration": 45,
-      "memory": 1024
-    }
-  },
+ 
   "env": {
     "PYTHON_VERSION": "3.9"
   }
