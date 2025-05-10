@@ -36,9 +36,22 @@ const App = () => {
     setLoading(true);
     setError(null);
 
+    let apiUrl; // Declare apiUrl
+
+    if (process.env.NODE_ENV === "production") {
+      // For Vercel deployment (production build), path is relative to the domain.
+      // Vercel routes /api/* to the serverless function.
+      apiUrl = "/api/predict";
+    } else {
+      // For local development, use the direct Uvicorn URL for your local backend.
+      apiUrl = "http://localhost:9000/predict"; // This matches your local Uvicorn setup
+    }
+    console.log("Attempting to fetch from:", apiUrl); // Good for debugging
+
     try {
       console.log("Form Data:", formData);
-      const response = await fetch("http://localhost:9000/predict", {
+      const response = await fetch(apiUrl, {
+        // Use the dynamically determined apiUrl
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -46,18 +59,36 @@ const App = () => {
         body: JSON.stringify(formData),
       });
 
+      // Improved error handling
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.detail || "Prediction failed");
+        let errorData;
+        try {
+          errorData = await response.json(); // Try to parse error response as JSON
+        } catch (parseError) {
+          // If backend error isn't JSON, or if there's a network issue response.json() might fail
+          const textError = await response.text();
+          console.error(
+            "Error response (not JSON or parse failed):",
+            textError
+          );
+          throw new Error(
+            textError || `HTTP error! status: ${response.status}`
+          );
+        }
+        console.error("Error response (JSON):", errorData);
+        throw new Error(
+          errorData.detail ||
+            `Prediction failed: ${response.statusText || response.status}`
+        );
       }
 
       const data = await response.json();
       console.log("Prediction Data:", data);
       setPrediction(data);
     } catch (err) {
-      console.error("Error:", err);
+      console.error("Error in handleSubmit:", err); // Log the full error object
       setError(err.message);
-      alert(err.message);
+      // alert(err.message); // Consider a more user-friendly error display in your UI
     } finally {
       setLoading(false);
     }
