@@ -4,9 +4,7 @@ asgiref==3.8.1
 certifi==2025.4.26
 click==8.1.8
 colorama==0.4.6
-Django==5.0.6
 dnspython==2.7.0
-email_validator==2.2.0
 fastapi==0.115.12
 fastapi-cli==0.0.7
 h11==0.16.0
