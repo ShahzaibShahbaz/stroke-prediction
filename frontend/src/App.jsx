@@ -44,7 +44,7 @@ const App = () => {
       apiUrl = "/api/predict";
     } else {
       // For local development, use the direct Uvicorn URL for your local backend.
-      apiUrl = "http://localhost:9000/predict"; // This matches your local Uvicorn setup
+      apiUrl = "http://localhost:9000/api/predict"; // This matches your local Uvicorn setup
     }
     console.log("Attempting to fetch from:", apiUrl); // Good for debugging
 
