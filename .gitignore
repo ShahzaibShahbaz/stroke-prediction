@@ -1,0 +1,98 @@
+# --- Environment Files ---
+# Ignore .env files in any directory
+**/.env
+
+# --- Python Specific ---
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+env.bak/
+venv.bak/
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IDE / Editor specific files (optional, but common)
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# --- OS Specific ---
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# --- Node / Frontend Specific (for your 'frontend' folder) ---
+frontend/node_modules/
+frontend/dist/
+frontend/.parcel-cache/
+frontend/.DS_Store
+# If you have build artifacts in frontend, add them:
+frontend/build/
+
+# --- Models ---
+# Consider ignoring very large model files if they are not suitable for Git.
+# If your .pkl files in the 'models' directory are very large (e.g., >100MB),
+# you might consider using Git LFS (Large File Storage) or not versioning them directly.
+# For now, if they are reasonably sized, you can keep them.
+# If you decide to ignore them, uncomment the line below:
+models/*.pkl
+
+# --- Other ---
+# Add any other files or directories that are generated, temporary, or specific to your local setup.

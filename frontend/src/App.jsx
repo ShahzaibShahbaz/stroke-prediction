@@ -1,38 +1,44 @@
 import React, { useState } from "react";
-import "./App.css";
 
-function App() {
+const App = () => {
   const [formData, setFormData] = useState({
-    age: 0,
+    age: 40,
     hypertension: 0,
     heart_disease: 0,
-    avg_glucose_level: 0,
-    bmi: 0,
+    avg_glucose_level: 100,
+    bmi: 25,
     work_children: false,
     smoke_smokes: false,
   });
 
   const [prediction, setPrediction] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
+    let parsedValue = value;
+    if (type === "number") {
+      parsedValue = parseFloat(value);
+
+      if (name === "age" && (parsedValue < 0 || parsedValue > 120)) return;
+      if (name === "avg_glucose_level" && parsedValue < 0) return;
+      if (name === "bmi" && parsedValue < 0) return;
+    }
     setFormData({
       ...formData,
-      [name]:
-        type === "checkbox"
-          ? checked
-          : type === "number"
-          ? parseFloat(value)
-          : value,
+      [name]: type === "checkbox" ? checked : parsedValue,
     });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setError(null);
+
     try {
-      const response = await fetch("http://localhost:8000/predict", {
+      console.log("Form Data:", formData);
+      const response = await fetch("http://localhost:9000/predict", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -41,150 +47,225 @@ function App() {
       });
 
       if (!response.ok) {
-        throw new Error("Prediction failed");
+        const errorData = await response.json();
+        throw new Error(errorData.detail || "Prediction failed");
       }
 
       const data = await response.json();
+      console.log("Prediction Data:", data);
       setPrediction(data);
-    } catch (error) {
-      console.error("Error:", error);
-      alert("An error occurred while making the prediction.");
+    } catch (err) {
+      console.error("Error:", err);
+      setError(err.message);
+      alert(err.message);
     } finally {
       setLoading(false);
     }
   };
 
+  const getBgColor = (risk) => {
+    if (!risk) return "bg-white";
+
+    switch (risk.toLowerCase()) {
+      case "low":
+        return "bg-green-50 border-l-4 border-green-500";
+      case "moderate":
+        return "bg-yellow-50 border-l-4 border-yellow-500";
+      case "high":
+        return "bg-red-50 border-l-4 border-red-500";
+      default:
+        return "bg-white";
+    }
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <h1>Stroke Risk Prediction</h1>
-        <p>Enter your health information to assess your stroke risk</p>
-      </header>
+    <div className="max-w-3xl mx-auto p-6 font-sans">
+      <div className="text-center mb-8">
+        <h1 className="text-3xl font-bold text-gray-800 mb-2">
+          Stroke Risk Prediction
+        </h1>
+        <p className="text-gray-600">
+          Enter your health information to assess your stroke risk
+        </p>
+      </div>
 
-      <main>
-        <form onSubmit={handleSubmit} className="prediction-form">
-          <div className="form-group">
-            <label>Age (standardized):</label>
-            <input
-              type="number"
-              step="0.01"
-              name="age"
-              value={formData.age}
-              onChange={handleChange}
-              required
-            />
-            <small>Enter your age, standardized as per the model</small>
-          </div>
-
-          <div className="form-group">
-            <label>Hypertension:</label>
-            <select
-              name="hypertension"
-              value={formData.hypertension}
-              onChange={handleChange}
-              required
+      <div>
+        <div className="bg-gray-100 p-6 rounded-lg shadow-md">
+          {error && (
+            <div
+              className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4"
+              role="alert"
             >
-              <option value="0">No</option>
-              <option value="1">Yes</option>
-            </select>
-          </div>
+              <strong className="font-bold">Error!</strong>
+              <span className="block sm:inline">{error}</span>
+            </div>
+          )}
 
-          <div className="form-group">
-            <label>Heart Disease:</label>
-            <select
-              name="heart_disease"
-              value={formData.heart_disease}
-              onChange={handleChange}
-              required
+          <form onSubmit={handleSubmit}>
+            <div className="mb-4">
+              <label className="block font-semibold mb-1 text-gray-700">
+                Age:
+              </label>
+              <input
+                type="number"
+                name="age"
+                value={formData.age}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md text-base focus:outline-none focus:ring-2 focus:ring-green-500"
+                min="0"
+                max="120"
+                required
+              />
+              <small className="block text-gray-500 text-sm mt-1">
+                Enter your age in years.
+              </small>
+            </div>
+
+            <div className="mb-4">
+              <label className="block font-semibold mb-1 text-gray-700">
+                Hypertension:
+              </label>
+              <select
+                name="hypertension"
+                value={formData.hypertension}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md text-base focus:outline-none focus:ring-2 focus:ring-green-500"
+                required
+              >
+                <option value="0">No</option>
+                <option value="1">Yes</option>
+              </select>
+            </div>
+
+            <div className="mb-4">
+              <label className="block font-semibold mb-1 text-gray-700">
+                Heart Disease:
+              </label>
+              <select
+                name="heart_disease"
+                value={formData.heart_disease}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md text-base focus:outline-none focus:ring-2 focus:ring-green-500"
+                required
+              >
+                <option value="0">No</option>
+                <option value="1">Yes</option>
+              </select>
+            </div>
+
+            <div className="mb-4">
+              <label className="block font-semibold mb-1 text-gray-700">
+                Average Glucose Level:
+              </label>
+              <input
+                type="number"
+                step="0.01"
+                name="avg_glucose_level"
+                value={formData.avg_glucose_level}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md text-base focus:outline-none focus:ring-2 focus:ring-green-500"
+                min="0"
+                required
+              />
+              <small className="block text-gray-500 text-sm mt-1">
+                Your average blood glucose level (mg/dL).
+              </small>
+            </div>
+
+            <div className="mb-4">
+              <label className="block font-semibold mb-1 text-gray-700">
+                BMI:
+              </label>
+              <input
+                type="number"
+                step="0.01"
+                name="bmi"
+                value={formData.bmi}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md text-base focus:outline-none focus:ring-2 focus:ring-green-500"
+                min="0"
+                required
+              />
+              <small className="block text-gray-500 text-sm mt-1">
+                Your Body Mass Index.
+              </small>
+            </div>
+
+            <div className="mb-4">
+              <label className="flex items-center font-normal text-gray-700">
+                <input
+                  type="checkbox"
+                  name="work_children"
+                  checked={formData.work_children}
+                  onChange={handleChange}
+                  className="mr-2 h-4 w-4 text-green-500 focus:ring-green-400"
+                />
+                Work: Children
+              </label>
+              <small className="block text-gray-500 text-sm mt-1">
+                Check if your work type is "children".
+              </small>
+            </div>
+
+            <div className="mb-6">
+              <label className="flex items-center font-normal text-gray-700">
+                <input
+                  type="checkbox"
+                  name="smoke_smokes"
+                  checked={formData.smoke_smokes}
+                  onChange={handleChange}
+                  className="mr-2 h-4 w-4 text-green-500 focus:ring-green-400"
+                />
+                Currently Smoking
+              </label>
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className={`w-full py-2 px-4 rounded-md text-white font-medium ${
+                loading
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-green-500 hover:bg-green-600"
+              }`}
             >
-              <option value="0">No</option>
-              <option value="1">Yes</option>
-            </select>
-          </div>
-
-          <div className="form-group">
-            <label>Average Glucose Level (standardized):</label>
-            <input
-              type="number"
-              step="0.01"
-              name="avg_glucose_level"
-              value={formData.avg_glucose_level}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label>BMI (standardized):</label>
-            <input
-              type="number"
-              step="0.01"
-              name="bmi"
-              value={formData.bmi}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          <div className="form-group checkbox">
-            <label>
-              <input
-                type="checkbox"
-                name="work_children"
-                checked={formData.work_children}
-                onChange={handleChange}
-              />
-              Work: Children
-            </label>
-          </div>
-
-          <div className="form-group checkbox">
-            <label>
-              <input
-                type="checkbox"
-                name="smoke_smokes"
-                checked={formData.smoke_smokes}
-                onChange={handleChange}
-              />
-              Currently Smoking
-            </label>
-          </div>
-
-          <button type="submit" disabled={loading}>
-            {loading ? "Predicting..." : "Predict Stroke Risk"}
-          </button>
-        </form>
+              {loading ? "Predicting..." : "Predict Stroke Risk"}
+            </button>
+          </form>
+        </div>
 
         {prediction && (
           <div
-            className={`prediction-result ${prediction.stroke_risk.toLowerCase()}`}
+            className={`mt-8 p-6 rounded-lg shadow-md ${getBgColor(
+              prediction.stroke_risk
+            )}`}
           >
-            <h2>Prediction Results</h2>
-            <p className="risk-level">
-              Risk Level: <strong>{prediction.stroke_risk}</strong>
+            <h2 className="text-xl font-bold mb-4 text-gray-800">
+              Prediction Results
+            </h2>
+            <p className="text-lg mb-4">
+              Risk Level:{" "}
+              <strong className="font-bold">{prediction.stroke_risk}</strong>
             </p>
-            <div className="model-predictions">
-              <p>
-                Logistic Regression:{" "}
-                {(prediction.lr_prediction * 100).toFixed(2)}%
-              </p>
-              <p>
+            <div className="bg-white bg-opacity-50 p-4 rounded-md mb-4">
+              <p className="mb-2">
                 Random Forest: {(prediction.rf_prediction * 100).toFixed(2)}%
               </p>
-              <p>
+              <p className="mb-2">
                 Support Vector Machine:{" "}
-                {(prediction.svm_prediction * 100).toFixed(2)}%
+                {prediction.svm_prediction === 0 ? "No Stroke" : "Stroke"}
               </p>
             </div>
-            <p className="disclaimer">
+
+            <p className="text-sm text-gray-500 italic">
               Note: This is a prediction based on machine learning models and
               should not replace professional medical advice.
             </p>
           </div>
         )}
-      </main>
+      </div>
     </div>
   );
-}
+};
 
 export default App;
