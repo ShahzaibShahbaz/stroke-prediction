@@ -92,7 +92,7 @@ frontend/build/
 # you might consider using Git LFS (Large File Storage) or not versioning them directly.
 # For now, if they are reasonably sized, you can keep them.
 # If you decide to ignore them, uncomment the line below:
-models/*.pkl
+# models/*.pkl
 
 # --- Other ---
 # Add any other files or directories that are generated, temporary, or specific to your local setup.
