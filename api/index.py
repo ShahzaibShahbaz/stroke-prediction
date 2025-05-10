@@ -140,7 +140,7 @@ class PredictionResponse(BaseModel):
     stroke_risk: str
 
 
-@app.post("/predict", response_model=PredictionResponse) # On Vercel, this is /api/predict
+@app.post("/api/predict", response_model=PredictionResponse) # On Vercel, this is /api/predict
 def predict_stroke(data: StrokeData):
     print(f"Request to /predict. Data: {data.model_dump_json()}")
     if not models_loaded:
