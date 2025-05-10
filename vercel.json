@@ -2,19 +2,17 @@
   "version": 2,
   "builds": [
     {
- 
       "src": "frontend/package.json",
       "use": "@vercel/static-build",
       "config": {
-
         "distDir": "dist"
       }
     }
   ],
-  "routes": [
-    { "handle": "filesystem" },
-
-    
-    { "src": "/(.*)", "dest": "index.html" }
+  "rewrites": [
+    {
+      "source": "/((?!api/|_next/|static/|assets/|favicon.ico|sw.js|.*\\..*).*)",
+      "destination": "/index.html"
+    }
   ]
 }
