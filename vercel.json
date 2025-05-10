@@ -27,6 +27,6 @@
     { "src": "/(.*)", "dest": "/frontend/index.html" }
   ],
   "env": {
-    "PYTHON_VERSION": "3.9"
+    "PYTHON_VERSION": "3.12"
   }
 }
