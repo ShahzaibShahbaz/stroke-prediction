@@ -31,7 +31,7 @@ except ImportError:
 app = FastAPI(title="Stroke Prediction API")
 
 # --- CORS Configuration ---
-default_origins = "http://localhost:5173,http://127.0.0.1:5173, https://stroke-prediction-g4b9.vercel.app/" # Default for local
+default_origins = "http://localhost:5173,http://127.0.0.1:5173,https://stroke-prediction-g4b9.vercel.app"
 allowed_origins_str = os.getenv("ALLOW_ORIGINS", default_origins)
 allowed_origins_list = [origin.strip() for origin in allowed_origins_str.split(',') if origin.strip()]
 print(f"CORS: Allowed Origins List: {allowed_origins_list}")
