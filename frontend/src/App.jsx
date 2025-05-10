@@ -35,13 +35,13 @@ const App = () => {
     e.preventDefault();
     setLoading(true);
     setError(null);
-
-    let apiUrl; // Declare apiUrl
+    const RENDER_BACKEND_URL = "https://your-stroke-api.onrender.com"; // Get this URL from Render after deploying your backend
+    let apiUrl;
 
     if (process.env.NODE_ENV === "production") {
       // For Vercel deployment (production build), path is relative to the domain.
       // Vercel routes /api/* to the serverless function.
-      apiUrl = "/api/predict";
+      apiUrl = `${RENDER_BACKEND_URL}/api/predict`;
     } else {
       // For local development, use the direct Uvicorn URL for your local backend.
       apiUrl = "http://localhost:9000/predict"; // This matches your local Uvicorn setup

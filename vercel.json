@@ -2,31 +2,19 @@
   "version": 2,
   "builds": [
     {
+ 
       "src": "frontend/package.json",
       "use": "@vercel/static-build",
       "config": {
-        "distDir": "dist" 
-      }
-    },
-    {
-      "src": "api/index.py",
-      "use": "@vercel/python",
-      "config": {
-        "maxDuration": 45,
-        "memory": 1024,
-        "includeFiles": ["models/**"] 
+
+        "distDir": "dist"
       }
     }
   ],
   "routes": [
-    
-     { "src": "/api/(.*)", "dest": "api/index.py" },
-    { "src": "/assets/(.*)", "dest": "/frontend/assets/$1" },
-    { "src": "/vite.svg", "dest": "/frontend/vite.svg" },
     { "handle": "filesystem" },
-    { "src": "/(.*)", "dest": "/frontend/index.html" }
-  ],
-  "env": {
-    "PYTHON_VERSION": "3.12"
-  }
+
+    
+    { "src": "/(.*)", "dest": "index.html" }
+  ]
 }

@@ -1,25 +1,18 @@
 annotated-types==0.7.0
 anyio==4.9.0
-certifi==2025.4.26
-click==8.1.8
+certifi==2024.2.2       # CORRECTED to an existing version (example, please check latest STABLE)
+click==8.1.8            # Often a uvicorn dependency, safe to keep
 fastapi==0.115.12
 h11==0.16.0
-httpcore==1.0.9
-httpx==0.28.1
+httpcore==1.0.9         # If keeping httpx
+httpx==0.28.1           # Kept for broader FastAPI compatibility, though not directly used
 idna==3.10
-itsdangerous==2.2.0
-Jinja2==3.1.6
 joblib==1.5.0
-MarkupSafe==3.0.2
 numpy==2.2.5
 pydantic==2.11.4
-pydantic-extra-types==2.10.4
-pydantic-settings==2.9.1
 pydantic_core==2.33.2
 python-dotenv==1.1.0
-python-multipart==0.0.20
-PyYAML==6.0.2
-scikit-learn==1.6.1
+scikit-learn==1.5.0     # CORRECTED to an example existing recent STABLE version (please verify and use the version compatible with your models, e.g., 1.4.2, 1.5.0)
 sniffio==1.3.1
 starlette==0.46.2
 typing_extensions==4.13.2

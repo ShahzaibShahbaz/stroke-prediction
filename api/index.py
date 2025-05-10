@@ -74,8 +74,9 @@ if IS_VERCEL_ENV:
     except Exception as e_path:
         print(f"VERCEL ENV: Error during diagnostic path derivation: {e_path}")
 else:
-    # LOCAL Environment
     print("LOCAL ENV: Detected.")
+    # This assumes api/index.py is in an 'api' subdirectory
+    # and 'models' is at the root of your project.
     base_dir_local = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     MODEL_DIR = os.path.join(base_dir_local, 'models')
     print(f"LOCAL ENV: Model directory configured to: {MODEL_DIR}")
@@ -231,7 +232,7 @@ def predict_stroke(data: StrokeData):
 @app.get("/") # On Vercel, this is /api/
 def read_root():
     return {
-        "message": "Stroke Prediction API (Vercel)",
+        "message": "Stroke Prediction API",
         "models_loaded": models_loaded,
         "model_directory_used": MODEL_DIR,
         "is_vercel_environment": IS_VERCEL_ENV,
