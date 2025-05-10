@@ -41,7 +41,7 @@ const App = () => {
     if (process.env.NODE_ENV === "production") {
       // For Vercel deployment (production build), path is relative to the domain.
       // Vercel routes /api/* to the serverless function.
-      apiUrl = "https://stroke-prediction-g4b9.vercel.app/api/predict";
+      apiUrl = "/api/predict";
     } else {
       // For local development, use the direct Uvicorn URL for your local backend.
       apiUrl = "http://localhost:9000/predict"; // This matches your local Uvicorn setup
