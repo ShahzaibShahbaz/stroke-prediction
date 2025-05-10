@@ -1,7 +1,9 @@
 # --- Environment Files ---
 # Ignore .env files in any directory
 **/.env
-
+.env
+.env.*
+!.env.example
 # --- Python Specific ---
 # Byte-compiled / optimized / DLL files
 __pycache__/

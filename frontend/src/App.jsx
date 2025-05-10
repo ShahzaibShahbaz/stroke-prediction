@@ -35,37 +35,52 @@ const App = () => {
     e.preventDefault();
     setLoading(true);
     setError(null);
-    const RENDER_BACKEND_URL = "https://your-stroke-api.onrender.com"; // Get this URL from Render after deploying your backend
+
     let apiUrl;
+    const defaultLocalApiBaseUrl = "http://localhost:9000"; // Default if not set in .env for dev
 
     if (process.env.NODE_ENV === "production") {
-      // For Vercel deployment (production build), path is relative to the domain.
-      // Vercel routes /api/* to the serverless function.
-      apiUrl = `${RENDER_BACKEND_URL}/api/predict`;
+      // In PRODUCTION (when deployed on Vercel)
+      // We expect VITE_API_BASE_URL to be set in Vercel's Environment Variables
+      const prodApiBaseUrl = import.meta.env.VITE_API_BASE_URL;
+
+      if (!prodApiBaseUrl) {
+        console.error(
+          "CRITICAL ERROR: VITE_API_BASE_URL is not defined in the production environment!"
+        );
+        setError(
+          "The application is not configured correctly. Please contact support. (Error: API_URL_MISSING)"
+        );
+        setLoading(false);
+        return; // Stop execution if the production API URL is not configured
+      }
+      apiUrl = `${prodApiBaseUrl}/api/predict`;
     } else {
-      // For local development, use the direct Uvicorn URL for your local backend.
-      apiUrl = "http://localhost:9000/predict"; // This matches your local Uvicorn setup
+      // In DEVELOPMENT (when you run npm run dev)
+      // Vite will look for VITE_API_BASE_URL_DEV in your frontend/.env.development or frontend/.env.local file
+      // If not found, it falls back to the defaultLocalApiBaseUrl
+      const devApiBaseUrl =
+        import.meta.env.VITE_API_BASE_URL_DEV || defaultLocalApiBaseUrl;
+      apiUrl = `${devApiBaseUrl}/api/predict`;
     }
-    console.log("Attempting to fetch from:", apiUrl); // Good for debugging
+
+    console.log("Attempting to fetch from:", apiUrl);
+    console.log("Form Data:", formData); // Ensure formData is accessible from your component's state
 
     try {
-      console.log("Form Data:", formData);
       const response = await fetch(apiUrl, {
-        // Use the dynamically determined apiUrl
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(formData), // Ensure formData is correctly stringified
       });
 
-      // Improved error handling
       if (!response.ok) {
         let errorData;
         try {
-          errorData = await response.json(); // Try to parse error response as JSON
+          errorData = await response.json();
         } catch (parseError) {
-          // If backend error isn't JSON, or if there's a network issue response.json() might fail
           const textError = await response.text();
           console.error(
             "Error response (not JSON or parse failed):",
@@ -86,9 +101,8 @@ const App = () => {
       console.log("Prediction Data:", data);
       setPrediction(data);
     } catch (err) {
-      console.error("Error in handleSubmit:", err); // Log the full error object
+      console.error("Error in handleSubmit:", err);
       setError(err.message);
-      // alert(err.message); // Consider a more user-friendly error display in your UI
     } finally {
       setLoading(false);
     }
