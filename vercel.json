@@ -13,7 +13,8 @@
       "use": "@vercel/python",
       "config": {
         "maxDuration": 45,
-        "memory": 1024
+        "memory": 1024,
+        "includeFiles": ["models/**"] 
       }
     }
   ],
